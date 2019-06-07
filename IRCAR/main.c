@@ -11,15 +11,13 @@ struct IR_Packet received_packet;
 
 int main(void)
 {
-	direction_DDR |= (1<<Rfore) | (1<<Lfore) | (1<<Rrear | (1<<Lrear));			//setting 2, 4, 5, 7 bytes on portD as an output
+	direction_DDR |= (1<<Rfore) | (1<<Lfore) | (1<<Rrear) | (1<<Lrear) | (1<<Penable) | (1<<Lenable);			//setting 2, 4, 5, 7 bytes on portD as an output
     
-	power = 255;
 	
 	init_receiver();
 	
 	sei();
 	
-	PWM();
 	
 	
 	
@@ -28,30 +26,22 @@ int main(void)
 		cli();
 		uint8_t check_result = check_new_packet(&received_packet);
 		sei();
-	
+		
+		
 		if (check_result)
-		{
-			char buff[10];
-			if (received_packet.repeat > 0)
-			{
+		{	
+				if(received_packet.command==7)//left
+					left();
+				if(received_packet.command==6)//right
+					right();
+				if(received_packet.command==64)//forward
+					forward();
+				if(received_packet.command==65)//backward
+					reverse();
 				
-					
-			} else
-			{
-	
-					if(received_packet.command==65)
-						left();
-					if(received_packet.command==66)
-						right();
-					if(received_packet.command==6)
-						forward();
-					if(received_packet.command==5)
-						reverse();
-
 				
-			}
 		}
-	
+		
 		_delay_ms(50);
 	
     }
